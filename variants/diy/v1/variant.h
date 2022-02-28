@@ -9,19 +9,34 @@
 //#define GPS_TX_PIN 12 // not connected
 
 #define BUTTON_PIN 39 // The middle button GPIO on the T-Beam
-#define EXT_NOTIFY_OUT 12 // Overridden default pin to use for Ext Notify Plugin (#975).
+#define EXT_NOTIFY_OUT 14 // 12 // Overridden default pin to use for Ext Notify Plugin (#975).
 #define LED_PIN 2 // add status LED (compatible with core-pcb and DIY targets)
 
+#define LORA_CS 18    // NSS/CS
 #define LORA_DIO0 26  // a No connect on the SX1262/SX1268 module
 #define LORA_RESET 23 // RST for SX1276, and for SX1262/SX1268
 #define LORA_DIO1 33  // IRQ for SX1262/SX1268
 #define LORA_DIO2 32  // BUSY for SX1262/SX1268
 #define LORA_DIO3     // Not connected on PCB, but internally on the TTGO SX1262/SX1268, if DIO3 is high the TXCO is enabled
 
+// In transmitting, set TXEN as high communication level，RXEN pin is low level;
+// In receiving, set RXEN as high communication level, TXEN is lowlevel;
+// Before powering off, set TXEN、RXEN as low level.
+#define LORA_RXEN 12 // 14  // Input - RF switch RX control, connecting external MCU IO, valid in high level
+#define LORA_TXEN 13  // Input - RF switch TX control, connecting external MCU IO or DIO2, valid in high level
+
+#undef RF95_SCK
 #define RF95_SCK 5
+#undef RF95_MISO
 #define RF95_MISO 19
+#undef RF95_MOSI
 #define RF95_MOSI 27
-#define RF95_NSS 18
+#undef RF95_NSS
+#define RF95_NSS LORA_CS
+
+// RX/TX for RFM95/SX127x
+#define RF95_RXEN LORA_RXEN
+#define RF95_TXEN LORA_TXEN
 
 // supported modules list
 #define USE_RF95 // RFM95/SX127x
@@ -30,16 +45,13 @@
 #define USE_LLCC68
 
 // common pinouts for SX126X modules
-#define SX126X_CS 18 // NSS for SX126X
+#define SX126X_CS LORA_CS // NSS for SX126X
 #define SX126X_DIO1 LORA_DIO1
 #define SX126X_BUSY LORA_DIO2
 #define SX126X_RESET LORA_RESET
-#define SX126X_RXEN 14
-#define SX126X_TXEN 13
+#define SX126X_RXEN LORA_RXEN
+#define SX126X_TXEN LORA_TXEN
 
-// RX/TX for RFM95/SX127x
-#define RF95_RXEN 14
-#define RF95_TXEN 13
 
 #ifdef EBYTE_E22
 // Internally the TTGO module hooks the SX126x-DIO2 in to control the TX/RX switch
