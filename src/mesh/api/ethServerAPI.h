@@ -19,7 +19,8 @@ class ethServerAPI : public ServerAPI<EthernetClient>
 class ethServerPort : public APIServerPort<ethServerAPI, EthernetServer>
 {
   public:
-    explicit ethServerPort(int port);
+    explicit ethServerPort(uint16_t port);
+    void begin(uint16_t port=0){};
 };
 
-void initApiServer(int port = 4403);
+void initApiServer(uint16_t port = 4403);

@@ -6,7 +6,7 @@
 
 static WiFiServerPort *apiPort;
 
-void initApiServer(int port)
+void initApiServer(uint16_t port)
 {
     // Start API server on port 4403
     if (!apiPort) {
@@ -21,5 +21,5 @@ WiFiServerAPI::WiFiServerAPI(WiFiClient &_client) : ServerAPI(_client)
     LOG_INFO("Incoming wifi connection\n");
 }
 
-WiFiServerPort::WiFiServerPort(int port) : APIServerPort(port) {}
+WiFiServerPort::WiFiServerPort(uint16_t port) : APIServerPort(port) {}
 #endif

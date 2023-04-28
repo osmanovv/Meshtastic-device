@@ -21,11 +21,16 @@ using namespace concurrency;
 
 static void WiFiEvent(WiFiEvent_t event);
 
+#if HAS_WIFI
 // NTP
 WiFiUDP ntpUDP;
 
 #ifndef DISABLE_NTP
 NTPClient timeClient(ntpUDP, config.network.ntp_server);
+#endif
+
+WiFiUDP syslogClient;
+Syslog syslog(syslogClient);
 #endif
 
 uint8_t wifiDisconnectReason = 0;
@@ -38,9 +43,6 @@ bool APStartupComplete = 0;
 unsigned long lastrun_ntp = 0;
 
 bool needReconnect = true; // If we create our reconnector, run it once at the beginning
-
-WiFiUDP syslogClient;
-Syslog syslog(syslogClient);
 
 Periodic *wifiReconnect;
 
@@ -67,6 +69,7 @@ static int32_t reconnectWiFi()
         }
     }
 
+#if HAS_WIFI
 #ifndef DISABLE_NTP
     if (WiFi.isConnected() && (((millis() - lastrun_ntp) > 43200000) || (lastrun_ntp == 0))) { // every 12 hours
         LOG_DEBUG("Updating NTP time from %s\n", config.network.ntp_server);
@@ -85,6 +88,7 @@ static int32_t reconnectWiFi()
         }
     }
 #endif
+#endif
 
     if (config.network.wifi_enabled && !WiFi.isConnected()) {
         return 1000; // check once per second
@@ -95,6 +99,9 @@ static int32_t reconnectWiFi()
 
 bool isWifiAvailable()
 {
+#if (HAS_WIFI == 0)
+return false;
+#endif
 
     if (config.network.wifi_enabled && (config.network.wifi_ssid[0])) {
         return true;
@@ -106,6 +113,9 @@ bool isWifiAvailable()
 // Disable WiFi
 void deinitWifi()
 {
+#if (HAS_WIFI == 0)
+return;
+#endif
     LOG_INFO("WiFi deinit\n");
 
     if (isWifiAvailable()) {
@@ -132,6 +142,7 @@ static void onNetworkConnected()
             MDNS.addService("https", "tcp", 443);
         }
 
+#if HAS_WIFI
 #ifndef DISABLE_NTP
         LOG_INFO("Starting NTP time client\n");
         timeClient.begin();
@@ -157,6 +168,7 @@ static void onNetworkConnected()
             syslog.defaultPriority(LOGLEVEL_USER);
             syslog.enable();
         }
+#endif
 
         initWebServer();
         initApiServer();
@@ -172,6 +184,10 @@ static void onNetworkConnected()
 // Startup WiFi
 bool initWifi()
 {
+#if (HAS_WIFI == 0)
+return false;
+#endif
+
     if (config.network.wifi_enabled && config.network.wifi_ssid[0]) {
 
         const char *wifiName = config.network.wifi_ssid;
@@ -246,7 +262,9 @@ static void WiFiEvent(WiFiEvent_t event)
         break;
     case ARDUINO_EVENT_WIFI_STA_STOP:
         LOG_INFO("WiFi station stopped\n");
+#if HAS_WIFI
         syslog.disable();
+#endif
         break;
     case ARDUINO_EVENT_WIFI_STA_CONNECTED:
         LOG_INFO("Connected to access point\n");
@@ -254,7 +272,9 @@ static void WiFiEvent(WiFiEvent_t event)
     case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
         LOG_INFO("Disconnected from WiFi access point\n");
         WiFi.disconnect(false, true);
+#if HAS_WIFI
         syslog.disable();
+#endif
         needReconnect = true;
         wifiReconnect->setIntervalFromNow(1000);
         break;
@@ -271,7 +291,9 @@ static void WiFiEvent(WiFiEvent_t event)
     case ARDUINO_EVENT_WIFI_STA_LOST_IP:
         LOG_INFO("Lost IP address and IP address is reset to 0\n");
         WiFi.disconnect(false, true);
+#if HAS_WIFI
         syslog.disable();
+#endif
         needReconnect = true;
         wifiReconnect->setIntervalFromNow(1000);
         break;

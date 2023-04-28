@@ -7,7 +7,7 @@
 
 static ethServerPort *apiPort;
 
-void initApiServer(int port)
+void initApiServer(uint16_t port)
 {
     // Start API server on port 4403
     if (!apiPort) {
@@ -22,6 +22,6 @@ ethServerAPI::ethServerAPI(EthernetClient &_client) : ServerAPI(_client)
     LOG_INFO("Incoming ethernet connection\n");
 }
 
-ethServerPort::ethServerPort(int port) : APIServerPort(port) {}
+ethServerPort::ethServerPort(uint16_t port) : APIServerPort(port) {}
 
 #endif

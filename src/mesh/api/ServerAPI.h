@@ -43,7 +43,7 @@ template <class T, class U> class APIServerPort : public U, private concurrency:
     T *openAPI = NULL;
 
   public:
-    explicit APIServerPort(int port);
+    explicit APIServerPort(uint16_t port);
 
     void init();
 

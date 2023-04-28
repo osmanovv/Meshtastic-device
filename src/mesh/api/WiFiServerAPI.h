@@ -19,7 +19,7 @@ class WiFiServerAPI : public ServerAPI<WiFiClient>
 class WiFiServerPort : public APIServerPort<WiFiServerAPI, WiFiServer>
 {
   public:
-    explicit WiFiServerPort(int port);
+    explicit WiFiServerPort(uint16_t port);
 };
 
-void initApiServer(int port = 4403);
+void initApiServer(uint16_t port = 4403);

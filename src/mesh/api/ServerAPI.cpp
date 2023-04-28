@@ -36,7 +36,7 @@ template <class T> int32_t ServerAPI<T>::runOnce()
     }
 }
 
-template <class T, class U> APIServerPort<T, U>::APIServerPort(int port) : U(port), concurrency::OSThread("ApiServer") {}
+template <class T, class U> APIServerPort<T, U>::APIServerPort(uint16_t port) : U(port), concurrency::OSThread("ApiServer") {}
 
 template <class T, class U> void APIServerPort<T, U>::init()
 {
